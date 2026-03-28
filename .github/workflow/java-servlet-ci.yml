@@ -1,4 +1,4 @@
-name: Java Servlet CI/CD
+name: Java Servlet CI
 
 on:
   push:
@@ -11,39 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup JDK 17
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
           cache: maven
 
-      - name: Build and run tests
+      - name: Build and test project
         run: mvn clean test
 
-      - name: Package WAR file
+      - name: Package WAR
         run: mvn package -DskipTests
 
       - name: Upload WAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: servlet-war
+          name: java-servlet-war
           path: target/*.war
-
-  deploy:
-    needs: build-test-package
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download WAR artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: servlet-war
-          path: deploy
-
-      - name: Deploy to Tomcat server
-        run: echo "Copy file WAR len Tomcat server"
